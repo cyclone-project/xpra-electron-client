@@ -1,0 +1,38 @@
+{
+  "name": "xpra-electron-client",
+  "version": "1.0.0",
+  "description": "An Xpra client created with Electron",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/electron/electron-quick-start.git"
+  },
+  "keywords": [
+    "Electron",
+    "cyclone",
+    "xpra"
+  ],
+  "author": "GitHub",
+  "license": "CC0-1.0",
+  "bugs": {
+    "url": "https://github.com/electron/electron-quick-start/issues"
+  },
+  "homepage": "https://github.com/electron/electron-quick-start#readme",
+  "devDependencies": {
+    "electron-prebuilt": "^1.2.0"
+  },
+  "dependencies": {
+    "bluebird": "^3.4.1",
+    "child-process-promise": "^2.0.3",
+    "electron-cookies": "^1.1.0",
+    "electron-prebuilt": "^1.2.6",
+    "portfinder": "^1.0.3",
+    "pty.js": "^0.3.1",
+    "sh": "0.0.3",
+    "suppose": "^0.6.1",
+    "tunnel-ssh": "^4.0.0"
+  }
+}
