@@ -22,13 +22,12 @@
   },
   "homepage": "https://github.com/electron/electron-quick-start#readme",
   "devDependencies": {
-    "electron-prebuilt": "^1.2.0"
+    "electron-prebuilt": "1.2.0"
   },
   "dependencies": {
     "bluebird": "^3.4.1",
     "child-process-promise": "^2.0.3",
     "electron-cookies": "^1.1.0",
-    "electron-prebuilt": "^1.2.6",
     "portfinder": "^1.0.3"
   }
 }

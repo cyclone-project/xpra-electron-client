@@ -26,7 +26,7 @@ function createWindow() {
             }
         });
      **/
-    new XpraConnection('sturgelose', '130.149.223.15', 'Bahamunt_0', '77')
+    new XpraConnection('sturgelose', '130.149.223.20', 'Bahamunt_0', '77')
         .init()
         .then((connection) => client.start(connection));
 
