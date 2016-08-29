@@ -15,6 +15,7 @@ let mainWindow;
 function createWindow() {
 
     let client = new Xpra();
+    /**
     client.isInstalled()
         .then((success) => {
             if (!success) {
@@ -24,6 +25,7 @@ function createWindow() {
                 app.quit();
             }
         });
+     **/
     new XpraConnection('sturgelose', '130.149.223.15', 'Bahamunt_0', '77')
         .init()
         .then((connection) => client.start(connection));
