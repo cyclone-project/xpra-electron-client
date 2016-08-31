@@ -67,7 +67,7 @@ ipcMain.on('successful-login', function (event, arg) {
             }
         });
      **/
-    new XpraConnection(arg.username, arg.server, arg.port)
+    new XpraConnection(arg.username, arg.server, 0, arg.port)
         .init()
         .then((connection) => client.start(connection));
 });
