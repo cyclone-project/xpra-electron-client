@@ -1,48 +1,32 @@
 const electron = require('electron');
 const { dialog } = require('electron');
+const {ipcMain} = require('electron')
 // Module to control application life.
 const app = electron.app;
 // Module to create native browser window.
 const BrowserWindow = electron.BrowserWindow;
 
-const Xpra = require('./lib/xpra').Xpra;
+const SshTunnel = require('./lib/xpra').SshTunnel;
 const XpraConnection = require('./lib/xpra').XpraConnection;
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
-let mainWindow;
+let loginWindow;
 
 function createWindow() {
 
-    let client = new Xpra();
-    /**
-    client.isInstalled()
-        .then((success) => {
-            if (!success) {
-                dialog.showErrorBox(
-                    'xPra not found in your system',
-                    'Please install xPra in order to use this client');
-                app.quit();
-            }
-        });
-     **/
-    new XpraConnection('sturgelose', '130.149.223.89', 'Bahamunt_0', '77')
-        .init()
-        .then((connection) => client.start(connection));
-
-
     // Create the browser window.
-    mainWindow = new BrowserWindow({ width: 800, height: 600 });
+    loginWindow = new BrowserWindow({ width: 600, height: 250 });
 
-    // and load the index.html of the app.
-    mainWindow.loadURL(`file://${__dirname}/index.html`);
+    // and load the login.html of the app.
+    loginWindow.loadURL(`file://${__dirname}/app/pages/login.html`);
 
     // Emitted when the window is closed.
-    mainWindow.on('closed', function () {
+    loginWindow.on('closed', function () {
         // Dereference the window object, usually you would store windows
         // in an array if your app supports multi windows, this is the time
         // when you should delete the corresponding element.
-        mainWindow = null
+        loginWindow = null
     })
 }
 
@@ -63,9 +47,29 @@ app.on('window-all-closed', function () {
 app.on('activate', function () {
     // On OS X it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
-    if (mainWindow === null) {
+    if (loginWindow === null) {
         createWindow()
     }
+});
+
+ipcMain.on('successful-login', function (event, arg) {
+
+    let client = new SshTunnel();
+
+    /**
+     client.isInstalled()
+     .then((success) => {
+            if (!success) {
+                dialog.showErrorBox(
+                    'xPra not found in your system',
+                    'Please install xPra in order to use this client');
+                app.quit();
+            }
+        });
+     **/
+    new XpraConnection(arg.username, arg.server, arg.port)
+        .init()
+        .then((connection) => client.start(connection));
 });
 
 // In this file you can include the rest of your app's specific main process

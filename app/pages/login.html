@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+    <link href="../theme/cyclone-login.css" rel="stylesheet">
+    <link href="../../node_modules/patternfly/dist/css/patternfly.css" rel="stylesheet">
+</head>
+<body>
+<div id="cy-form" class="">
+    <div id="cy-form-wrapper" class="row">
+        <form id="cy-local-login" class=""
+              style="visibility: visible;">
+
+            <div class="form-group col-xs-12">
+                <div class="">
+                    <input id="username" placeholder="Username" class="form-control" name="username" value=""
+                           type="text" autofocus="">
+                </div>
+            </div>
+
+            <div class="form-group col-xs-8">
+                <div class="">
+                    <input id="server" placeholder="Host or IP" class="form-control" name="server" value=""
+                           type="text" autofocus="">
+                </div>
+            </div>
+
+            <div class="col-xs-1"> :</div>
+
+            <div class="form-group col-xs-3">
+                <div class="">
+                    <input id="port" placeholder="Port" class="form-control" name="port" value=""
+                           type="text" autofocus="">
+                </div>
+            </div>
+
+            <div class="form-group form-group col-xs-12">
+                <input class="btn btn-primary btn-lg" name="login" id="cy-login" type="submit" value="Log in">
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+
+<script src="login.js"></script>
+</html>
