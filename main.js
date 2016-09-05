@@ -29,11 +29,11 @@ function createWindow() {
     // Create the browser window.
     loginWindow = new BrowserWindow({
         width: 600,
-        height: 250,
+        height: 300,
         title: 'Log In'
     });
 
-    loginWindow.setMenu(null);
+    //loginWindow.setMenu(null);
 
     // and load the login.html of the app.
     loginWindow.loadURL(`file://${__dirname}/app/pages/login.html`);

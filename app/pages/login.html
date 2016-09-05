@@ -14,25 +14,78 @@
 
             <div class="form-group col-xs-12">
                 <div class="">
-                    <input id="username" placeholder="Username" class="form-control" name="username" value=""
-                           type="text" autofocus="">
+                    <select id="form-selector" class="form-control">
+                        <option value="sshTunnel">SSH Tunnel</option>
+                        <option value="sshTerminal">SSH Terminal</option>
+                        <option value="x11">X11 Remote Desktop</option>
+                    </select>
                 </div>
             </div>
 
-            <div class="form-group col-xs-8">
-                <div class="">
-                    <input id="server" placeholder="Host or IP" class="form-control" name="server" value=""
-                           type="text" autofocus="">
+            <!-- SSH Tunnel -->
+            <div id="sshTunnel" class="selected-form">
+
+                <div class="form-group col-xs-12">
+                    <div class="">
+                        <input id="username" placeholder="Username" class="form-control" name="username" value=""
+                               type="text" autofocus="">
+                    </div>
                 </div>
+
+                <div class="form-group col-xs-8">
+                    <div class="">
+                        <input id="server" placeholder="Host or IP" class="form-control" name="server" value=""
+                               type="text" autofocus="">
+                    </div>
+                </div>
+
+                <div class="form-group col-xs-1"> :</div>
+
+                <div class="form-group col-xs-3">
+                    <div class="">
+                        <input id="port" placeholder="Port" class="form-control" name="port" value=""
+                               type="text" autofocus="">
+                    </div>
+                </div>
+
             </div>
 
-            <div class="col-xs-1"> :</div>
+            <!-- SSH Terminal -->
+            <div id="sshTerminal" class="selected-form">
 
-            <div class="form-group col-xs-3">
-                <div class="">
-                    <input id="port" placeholder="Port" class="form-control" name="port" value=""
-                           type="text" autofocus="">
+                <div class="form-group col-xs-12">
+                    <div class="">
+                        <input id="username" placeholder="Username" class="form-control" name="username" value=""
+                               type="text" autofocus="">
+                    </div>
                 </div>
+
+                <div class="form-group col-xs-8">
+                    <div class="">
+                        <input id="server" placeholder="Host or IP" class="form-control" name="server" value=""
+                               type="text" autofocus="">
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- X11 xPra -->
+            <div id="x11" class="selected-form">
+
+                <div class="form-group col-xs-12">
+                    <div class="">
+                        <input id="username" placeholder="Username" class="form-control" name="username" value=""
+                               type="text" autofocus="">
+                    </div>
+                </div>
+
+                <div class="form-group col-xs-8">
+                    <div class="">
+                        <input id="server" placeholder="Host or IP" class="form-control" name="server" value=""
+                               type="text" autofocus="">
+                    </div>
+                </div>
+
             </div>
 
             <div class="form-group form-group col-xs-12">

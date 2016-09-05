@@ -1,7 +1,7 @@
 'use strict';
 
 window.$ = window.jQuery = require('jquery');
-const {ipcRenderer} = require('electron')
+const {ipcRenderer} = require('electron');
 const remote = require('electron').remote;
 
 
@@ -57,10 +57,20 @@ $('#cy-local-login').submit(function () {
             port: port
         });
 
-        // var window = remote.getCurrentWindow();
-        // window.close();
+        var window = remote.getCurrentWindow();
+        window.close();
     }
 
     return false;
 
 });
+
+$(function () {
+    $('#form-selector').change(function () {
+        $('.selected-form').hide();
+        $('#' + $(this).val()).show();
+    })
+});
+
+$('.selected-form').hide();
+$('#sshTunnel').show();
