@@ -1,6 +1,7 @@
 const electron = require('electron');
-const { dialog } = require('electron');
-const {ipcMain} = require('electron')
+const {Tray, dialog} = require('electron');
+const {ipcMain} = require('electron');
+const path = require('path');
 // Module to control application life.
 const app = electron.app;
 // Module to create native browser window.
@@ -15,8 +16,24 @@ let loginWindow;
 
 function createWindow() {
 
+    let client = new SshTunnel();
+    client.isInstalled()
+        .then((success) => {
+            if (!success) {
+                dialog.showErrorBox(
+                    'xPra not found in your system',
+                    'Please install xPra in order to use xPra X11/Remote Desktop connection');
+            }
+        });
+
     // Create the browser window.
-    loginWindow = new BrowserWindow({ width: 600, height: 250 });
+    loginWindow = new BrowserWindow({
+        width: 600,
+        height: 250,
+        title: 'Log In'
+    });
+
+    loginWindow.setMenu(null);
 
     // and load the login.html of the app.
     loginWindow.loadURL(`file://${__dirname}/app/pages/login.html`);
@@ -35,13 +52,32 @@ function createWindow() {
 // Some APIs can only be used after this event occurs.
 app.on('ready', createWindow);
 
+let tray = null;
+app.on('ready', () => {
+    if (tray === null) {
+        tray = new Tray(path.join(`${__dirname}/app/theme`, 'tray_logo.ico'));
+        tray.setToolTip('Cyclone service running');
+    }
+
+});
+
+// Detect if the app is already running and do not start it again,
+// just recreate the login window in the existing instance
+ var iShouldQuit = app.makeSingleInstance(() => {
+    if (loginWindow == null) {
+        createWindow();
+    }
+    else {
+        loginWindow.focus();
+    }
+});
+
+if (iShouldQuit) {app.quit();return;}
+
 // Quit when all windows are closed.
 app.on('window-all-closed', function () {
     // On OS X it is common for applications and their menu bar
     // to stay active until the user quits explicitly with Cmd + Q
-    if (process.platform !== 'darwin') {
-        app.quit()
-    }
 });
 
 app.on('activate', function () {
@@ -56,17 +92,6 @@ ipcMain.on('successful-login', function (event, arg) {
 
     let client = new SshTunnel();
 
-    /**
-     client.isInstalled()
-     .then((success) => {
-            if (!success) {
-                dialog.showErrorBox(
-                    'xPra not found in your system',
-                    'Please install xPra in order to use this client');
-                app.quit();
-            }
-        });
-     **/
     new XpraConnection(arg.username, arg.server, 0, arg.port)
         .init()
         .then((connection) => client.start(connection));
