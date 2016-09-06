@@ -10,6 +10,14 @@
 	color: #555;
 }
 
+.port-left {
+    padding-right: 0;
+}
+
+.port-right {
+    padding-left: 0;
+}
+
 #kc-logo {
 	margin-bottom: 20px;
 }

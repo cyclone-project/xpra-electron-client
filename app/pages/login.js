@@ -13,11 +13,15 @@ $('#cy-local-login').submit(function () {
 
     let usernameTag = $("input#username");
     let serverTag = $("input#server");
-    let portTag = $("input#port");
+    let remotePortTag = $("input#remotePort");
+    let localPortTag = $("input#localPort");
 
     let username = usernameTag.val();
     let server = serverTag.val();
-    let port = portTag.val();
+    let remotePort = remotePortTag.val();
+    let localPort = localPortTag.val();
+
+    let selectedForm = $('#form-selector').val();
 
     let valid = true;
 
@@ -40,25 +44,44 @@ $('#cy-local-login').submit(function () {
     }
 
 
-    // Validate port
-    if (port !== "" && !isNaN(port))
-        portTag.closest("div.form-group").removeClass('has-error');
-    else {
-        valid = false;
-        portTag.closest("div.form-group").addClass('has-error');
+    // Validate local port if needed
+    if (selectedForm === 'sshTunnel') {
+
+        // Validate local port
+        if (localPort !== "" && !isNaN(localPort))
+            localPortTag.closest("div.form-group").removeClass('has-error');
+        else {
+            valid = false;
+            localPortTag.closest("div.form-group").addClass('has-error');
+        }
+
     }
 
+    // Validate remote port if needed
+    if (selectedForm === 'sshTunnel' || selectedForm === 'x11') {
+
+        // Validate remote port
+        if (remotePort !== "" && !isNaN(remotePort))
+            remotePortTag.closest("div.form-group").removeClass('has-error');
+        else {
+            valid = false;
+            remotePortTag.closest("div.form-group").addClass('has-error');
+        }
+
+    }
 
     // Start connection if everything is valid
     if (valid) {
         ipcRenderer.send('successful-login', {
+            selectedForm: selectedForm,
             username: username,
             server: server,
-            port: port
+            localPort: localPort,
+            remotePort: remotePort
         });
 
-        var window = remote.getCurrentWindow();
-        window.close();
+        // Close the login window as we don't need it anymore
+        remote.getCurrentWindow().close();
     }
 
     return false;

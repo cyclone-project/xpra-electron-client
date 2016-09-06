@@ -54,7 +54,7 @@ app.on('ready', createWindow);
 
 let tray = null;
 app.on('ready', () => {
-    if (tray === null) {
+    if (tray === null && process.platform !== 'darwin') {
         tray = new Tray(path.join(`${__dirname}/app/theme`, 'tray_logo.ico'));
         tray.setToolTip('Cyclone service running');
     }
@@ -92,7 +92,7 @@ ipcMain.on('successful-login', function (event, arg) {
 
     let client = new SshTunnel();
 
-    new XpraConnection(arg.username, arg.server, 0, arg.port)
+    new XpraConnection(arg.username, arg.server, 0, arg.remotePort)
         .init()
         .then((connection) => client.start(connection));
 });
