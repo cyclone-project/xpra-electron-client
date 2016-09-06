@@ -7,7 +7,7 @@ const app = electron.app;
 // Module to create native browser window.
 const BrowserWindow = electron.BrowserWindow;
 
-const SshTunnel = require('./lib/xpra').SshTunnel;
+const Connection = require('./lib/xpra').Connection;
 const XpraConnection = require('./lib/xpra').XpraConnection;
 
 // Keep a global reference of the window object, if you don't, the window will
@@ -16,7 +16,7 @@ let loginWindow;
 
 function createWindow() {
 
-    let client = new SshTunnel();
+    let client = new Connection();
     client.isInstalled()
         .then((success) => {
             if (!success) {
@@ -33,7 +33,7 @@ function createWindow() {
         title: 'Log In'
     });
 
-    //loginWindow.setMenu(null);
+    loginWindow.setMenu(null);
 
     // and load the login.html of the app.
     loginWindow.loadURL(`file://${__dirname}/app/pages/login.html`);
@@ -90,11 +90,14 @@ app.on('activate', function () {
 
 ipcMain.on('successful-login', function (event, arg) {
 
-    let client = new SshTunnel();
+    let client = new Connection();
 
     new XpraConnection(arg.username, arg.server, 0, arg.remotePort)
         .init()
-        .then((connection) => client.start(connection));
+        .then((connection) => client
+                .startTunnel(connection)
+                .then(() => client.startXpra(connection))
+        );
 });
 
 // In this file you can include the rest of your app's specific main process

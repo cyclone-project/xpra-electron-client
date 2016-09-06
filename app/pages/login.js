@@ -90,8 +90,8 @@ $('#cy-local-login').submit(function () {
 
 $(function () {
     $('#form-selector').change(function () {
-        $('.selected-form').hide();
-        $('#' + $(this).val()).show();
+        $('.hiddable').hide();
+        $('.' + $(this).val()).show();
     })
 });
 
