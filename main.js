@@ -13,6 +13,7 @@ const XpraConnection = require('./lib/xpra').XpraConnection;
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let loginWindow;
+let client;
 
 function createWindow() {
 
@@ -90,14 +91,22 @@ app.on('activate', function () {
 
 ipcMain.on('successful-login', function (event, arg) {
 
-    let client = new Connection();
+    client = new Connection();
 
     new XpraConnection(arg.username, arg.server, 0, arg.remotePort)
         .init()
         .then((connection) => client
                 .startTunnel(connection)
                 .then(() => client.startXpra(connection))
-        );
+        )
+        .then(()=> {
+            ipcMain.send('connection-started')
+        })
+});
+
+ipcMain.on('disconnect', () => {
+    client.disconnect()
+        .then(() => ipcMain.send('connection-ended'))
 });
 
 // In this file you can include the rest of your app's specific main process

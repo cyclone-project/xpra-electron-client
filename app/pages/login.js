@@ -8,8 +8,27 @@ const remote = require('electron').remote;
 const ValidIpAddressRegex = /^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$/;
 const ValidHostnameRegex = /^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$/;
 
+let connectionRunning = false;
+
+ipcRenderer.on('connection-started', () => {
+    connectionRunning = true;
+    $('#cy-local-login').find('div div :input:not(:button)').prop('disabled', true);
+    $('#cy-login').val('Disconnect');
+});
+
+ipcRenderer.on('connection-ended', () => {
+    connectionRunning = false;
+    $('#cy-local-login').find('div div :input:not(:button)').prop('disabled', true);
+    $('#cy-login').val('Log in');
+});
+
 // Bind function to submit event of form using JQuery
 $('#cy-local-login').submit(function () {
+
+    if (connectionRunning) {
+        ipcRenderer.send('disconnect');
+        return false;
+    }
 
     let usernameTag = $("input#username");
     let serverTag = $("input#server");
