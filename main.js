@@ -34,7 +34,7 @@ function createWindow() {
         title: 'Log In'
     });
 
-    loginWindow.setMenu(null);
+    //loginWindow.setMenu(null);
 
     // and load the login.html of the app.
     loginWindow.loadURL(`file://${__dirname}/app/pages/login.html`);
@@ -99,14 +99,13 @@ ipcMain.on('successful-login', function (event, arg) {
                 .startTunnel(connection)
                 .then(() => client.startXpra(connection))
         )
-        .then(()=> {
-            ipcMain.send('connection-started')
-        })
+        .then(() => loginWindow.restore())
+        .then(() => loginWindow.send('connection-started'))
 });
 
 ipcMain.on('disconnect', () => {
     client.disconnect()
-        .then(() => ipcMain.send('connection-ended'))
+        .then(() => loginWindow.send('connection-ended'))
 });
 
 // In this file you can include the rest of your app's specific main process

@@ -10,16 +10,18 @@ const ValidHostnameRegex = /^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])
 
 let connectionRunning = false;
 
-ipcRenderer.on('connection-started', () => {
+ipcRenderer.on('connection-started', function () {
     connectionRunning = true;
     $('#cy-local-login').find('div div :input:not(:button)').prop('disabled', true);
     $('#cy-login').val('Disconnect');
+    remote.getCurrentWindow().show();
 });
 
-ipcRenderer.on('connection-ended', () => {
+ipcRenderer.on('connection-ended', function () {
     connectionRunning = false;
-    $('#cy-local-login').find('div div :input:not(:button)').prop('disabled', true);
+    $('#cy-local-login').find('div div :input:not(:button)').prop('disabled', false);
     $('#cy-login').val('Log in');
+    remote.getCurrentWindow().focus();
 });
 
 // Bind function to submit event of form using JQuery
@@ -100,7 +102,7 @@ $('#cy-local-login').submit(function () {
         });
 
         // Close the login window as we don't need it anymore
-        remote.getCurrentWindow().close();
+        remote.getCurrentWindow().hide();
     }
 
     return false;
