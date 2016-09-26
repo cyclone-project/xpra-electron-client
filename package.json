@@ -37,7 +37,7 @@
   },
   "build": {
     "appId": "org.cyclone.xpraclient",
-    "asar": true,
+    "asar": false,
     "win": {
       "target": [ "nsis" ]
     }
