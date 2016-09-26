@@ -1,5 +1,5 @@
 const electron = require('electron');
-const {Tray, dialog} = require('electron');
+const {Tray, dialog, Menu} = require('electron');
 const {ipcMain} = require('electron');
 const path = require('path');
 // Module to control application life.
@@ -58,6 +58,15 @@ app.on('ready', () => {
     if (tray === null && process.platform !== 'darwin') {
         tray = new Tray(path.join(`${__dirname}/theme`, 'tray_logo.ico'));
         tray.setToolTip('Cyclone service running');
+
+        const contextMenu = Menu.buildFromTemplate(
+            [{
+                 label: 'Close',
+                click (){
+                     app.quit()
+                }
+                }]);
+        tray.setContextMenu(contextMenu);
     }
 
 });
