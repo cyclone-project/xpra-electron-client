@@ -37,7 +37,7 @@ function createWindow() {
     //loginWindow.setMenu(null);
 
     // and load the login.html of the app.
-    loginWindow.loadURL(`file://${__dirname}/app/pages/login.html`);
+    loginWindow.loadURL(`file://${__dirname}/pages/login.html`);
 
     // Emitted when the window is closed.
     loginWindow.on('closed', function () {
@@ -56,7 +56,7 @@ app.on('ready', createWindow);
 let tray = null;
 app.on('ready', () => {
     if (tray === null && process.platform !== 'darwin') {
-        tray = new Tray(path.join(`${__dirname}/app/theme`, 'tray_logo.ico'));
+        tray = new Tray(path.join(`${__dirname}/theme`, 'tray_logo.ico'));
         tray.setToolTip('Cyclone service running');
     }
 

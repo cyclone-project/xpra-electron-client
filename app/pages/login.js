@@ -1,5 +1,7 @@
 'use strict';
 
+require('electron-cookies');
+
 window.$ = window.jQuery = require('jquery');
 const {ipcRenderer} = require('electron');
 const remote = require('electron').remote;
