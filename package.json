@@ -4,9 +4,9 @@
   "description": "An Xpra client created with Electron",
   "main": "app/main.js",
   "scripts": {
-    "start": "electron .",
     "pack": "build --dir",
-    "dist": "build --win --x64"
+    "dist": "build",
+    "postinstall": "install-app-deps"
   },
   "repository": {
     "type": "git",
@@ -29,17 +29,14 @@
     "electron": "^1.3.5"
   },
   "dependencies": {
-    "bluebird": "^3.4.1",
-    "electron-cookies": "^1.1.0",
-    "jquery": "^3.1.0",
-    "patternfly": "^3.9.0",
-    "portfinder": "^1.0.3"
   },
   "build": {
     "appId": "org.cyclone.xpraclient",
-    "asar": false,
+    "mac": {
+      "category": "public.app-category.utilities"
+    },
     "win": {
-      "target": [ "nsis" ]
+      "iconUrl": "https://raw.githubusercontent.com/cyclone-project/xpra-electron-client/master/build/icon.ico"
     }
   }
 }

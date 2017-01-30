@@ -81,7 +81,7 @@ $('#cy-local-login').submit(function () {
     }
 
     // Validate remote port if needed
-    if (selectedForm === 'sshTunnel' || selectedForm === 'x11') {
+    if (selectedForm === 'sshTunnel') {
 
         // Validate remote port
         if (remotePort !== "" && !isNaN(remotePort))
