@@ -122,7 +122,7 @@ ipcMain.on('successful-login', function (event, arg) {
             config.localPort = yield Client.getAvailablePort();
 
         if (config.remotePort == "")
-            config.remotePort = yield Client.getAvailablePort();
+            config.remotePort = "20001";
 
         let x11 = arg.selectedForm == 'x11';
         let tunnel = arg.selectedForm == 'sshTunnel';
@@ -141,21 +141,26 @@ ipcMain.on('successful-login', function (event, arg) {
 
         if (tunnel || x11) {
             server = yield Client.createTunnel(client, config);
+            yield sleep(2000);
         }
         if (x11) {
-            yield Client.setupX11(client, config);
-            yield sleep(1000);
+            //yield Client.setupX11(client, config);
+            //yield sleep(2000);
             xpraWindow = new BrowserWindow({
                 webPreferences: {
                     nodeIntegration: false
-                }
+                },
+                closable: false
             });
             loadingWindow.close();
             xpraWindow.loadURL(`http://localhost:${config.localPort}`);
+            //yield sleep(2000);
+            //xpraWindow.loadURL(`http://localhost:${config.localPort}/index.html?server=localhost&port=${config.remotePort}&encoding=&keyboard_layout=us&submit=true`);
+            //xpraWindow.webContents.openDevTools();
         }
-        loginWindow.x = 0;
-        loginWindow.y = 0;
+        loginWindow.setPosition(0,0, true);
         loginWindow.send('connection-started');
+        loginWindow.show();
     })
 
 
@@ -167,6 +172,8 @@ ipcMain.on('disconnect', () => {
 
         try {
             // Close window
+            xpraWindow.loadURL(`file://${__dirname}/pages/loading/loading.html`);
+            xpraWindow.setClosable(true);
             xpraWindow.close();
             xpraWindow = null;
 
@@ -185,6 +192,7 @@ ipcMain.on('disconnect', () => {
         }
 
         yield loginWindow.send('connection-ended');
+        loginWindow.focus();
 
     })
 });

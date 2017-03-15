@@ -16,14 +16,12 @@ ipcRenderer.on('connection-started', function () {
     connectionRunning = true;
     $('#cy-local-login').find('div div :input:not(:button)').prop('disabled', true);
     $('#cy-login').val('Disconnect');
-    remote.getCurrentWindow().show();
 });
 
 ipcRenderer.on('connection-ended', function () {
     connectionRunning = false;
     $('#cy-local-login').find('div div :input:not(:button)').prop('disabled', false);
     $('#cy-login').val('Log in');
-    remote.getCurrentWindow().focus();
 });
 
 // Bind function to submit event of form using JQuery

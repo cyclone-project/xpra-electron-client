@@ -1,6 +1,5 @@
 const net = require('net');
 const SSH2Client = require('ssh2').Client;
-const ssh = new SSH2Client();
 const co = require('co');
 const PortFinder = require('portfinder');
 
@@ -16,6 +15,8 @@ function* createConnection(config) {
     let actualState = STATE.HANDSHAKE;
 
     return new Promise((resolve, reject) => {
+
+        let ssh = new SSH2Client();
         let sshPromise = new Promise((resolve, reject) => {
             ssh
                 .on('ready', function () {
@@ -29,7 +30,6 @@ function* createConnection(config) {
                     host: config.host,
                     port: 22,
                     username: config.username,
-                    //password: config.password,
                     tryKeyboard: true,
                     readyTimeout: 200000,
                 });
@@ -79,90 +79,81 @@ function* createConnection(config) {
     })
 }
 
-function* createTunnel(ssh, config) {
+function forwardConnection(ssh, config) {
 
     return new Promise((resolve, reject) => {
-        let server = net.createServer(function (sock) {
+        let timedOut = false;
+        const timeout = setTimeout(() => {
+            timedOut = true;
+            ssh.end();
+            reject(new Error('Timed out while waiting for forwardOut'));
+        }, 10000);
 
-            let timedOut = false;
-            const timeout = setTimeout(() => {
-                timedOut = true;
-                ssh.end();
-                reject(new Error('Timed out while waiting for forwardOut'));
-            }, 1000);
-
-            ssh.forwardOut(
-                sock.remoteAddress,
-                sock.remotePort,
-                config.remoteHost,
-                config.remotePort,
-                function (err, stream) {
-
-                    if (timedOut) {
-                        console.log('port forward timed out.');
-                        return null;
-                    }
-
-                    clearTimeout(timeout);
-
-                    if (err) return sock.end();
-                    sock.pipe(stream).pipe(sock);
-                    stream.on('close', function () {
-                        console.log('TCP :: CLOSED');
-                        ssh.end();
-                    });
+        ssh.forwardOut(
+            '127.0.0.1',
+            config.localPort,
+            '127.0.0.1',
+            config.remotePort,
+            (err, stream) => {
+                if (timedOut) {
+                    console.log('port forward timed out.');
+                    return null;
                 }
-            );
 
-        }).listen(config.localPort, function (test) {
-            console.log(`Listening on ${config.localPort} for connections to forward`);
-            resolve(server);
-        });
-    })
+                clearTimeout(timeout);
+
+                if (err) {
+                    ssh.end();
+                    return reject(err);
+                }
+
+                console.log('port forward stream is ready.');
+                stream.on('close', () => {
+                    //console.log('port forward stream is closed.');
+                });
+
+                resolve(stream);
+            }
+        );
+    });
 
 }
 
+function * createTunnel (ssh, config) {
 
-// ﻿xpra start --bind-tcp=0.0.0.0:14500 --html=on --start-child=firefox
-function* setupX11(ssh, config) {
+    //yield forwardConnection(ssh, config);
 
-    let xpraCommand = `xpra start --bind-tcp=0.0.0.0:${config.remotePort} --html=on --start-child=${config.xProgram}; bash`;
-
-    return new Promise((resolve, reject) => {
-
-        ssh.exec(xpraCommand, function (err, stream) {
-            if (err) reject(err);
-            ssh.exec('\x03', function (err, stream) {
-                resolve(ssh);
-            })
+    return new Promise( (resolve, reject) => {
+        const server = net.createServer( co.wrap(function * (connection) {
+            const stream = yield forwardConnection(ssh, config);
+            connection.pipe(stream).pipe(connection);
+            //console.log('tunnel pipeline created.');
+        }));
+        server.on('error', err => {
+            reject(err);
+            ssh.end();
         });
-
+        server.on('close', () => ssh.end());
+        server.listen(config.localPort, 'localhost', () => {
+            //console.log('local tcp server listening.');
+            resolve(server);
+        });
     });
-
 }
 
 function *  getAvailablePort() {
     return new Promise((resolve, reject) => {
         PortFinder.getPort(function (err, port) {
             if (err) reject(err);
-            resolve(port);
+            resolve((port + 1).toString());
         });
     });
 }
 
 let close = function * close(ssh) {
     return new Promise((resolve, reject) => {
-        ssh.exec('xpra exit', function (err, stream) {
-            if (err) reject(err);
-            try {
-                ssh.end();
-                resolve(true);
-            }
-            catch (e) {
-                console.log(e);
-                reject(e);
-            }
-        });
+        resolve(true);
+        ssh.end();
 
     });
 };
@@ -181,5 +172,4 @@ let close = function * close(ssh) {
 exports.createConnection = createConnection;
 exports.closeConnection = close;
 exports.createTunnel = createTunnel;
-exports.setupX11 = setupX11;
 exports.getAvailablePort = getAvailablePort;

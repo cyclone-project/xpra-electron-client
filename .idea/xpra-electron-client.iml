@@ -15,5 +15,6 @@
     <orderEntry type="library" name="bluebird-DefinitelyTyped" level="application" />
     <orderEntry type="library" name="node-DefinitelyTyped" level="application" />
     <orderEntry type="library" name="jQuery-2.0.0" level="application" />
+    <orderEntry type="library" name="electron-DefinitelyTyped" level="application" />
   </component>
 </module>
