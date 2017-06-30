@@ -8,28 +8,32 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/electron/electron-quick-start.git"
+    "url": "git+https://github.com/cyclone-project/xpra-electron-client.git"
   },
   "keywords": [
     "Electron",
     "cyclone",
     "xpra"
   ],
-  "author": "GitHub",
+  "author": {
+    "name": "Erik Berdonces Bonelo",
+    "email": "erik.berdoncesbonelo@tu-berlin.de",
+    "url": "cyclone-project.github.io"
+  },
   "license": "CC0-1.0",
   "bugs": {
-    "url": "https://github.com/electron/electron-quick-start/issues"
+    "url": "https://github.com/cyclone-project/xpra-electron-client/issues"
   },
-  "homepage": "https://github.com/electron/electron-quick-start#readme",
+  "homepage": "https://github.com/cyclone-project/xpra-electron-client",
   "devDependencies": {},
   "dependencies": {
-    "bluebird": "^3.4.1",
+    "bluebird": "^3.5.0",
     "co": "^4.6.0",
     "co-sleep": "0.0.1",
     "electron-cookies": "^1.1.0",
     "jquery": "^3.1.1",
-    "patternfly": "^3.18.1",
-    "portfinder": "^1.0.3",
+    "patternfly": "^3.23.0",
+    "portfinder": "^1.0.13",
     "ssh2": "^0.5.4"
   }
 }

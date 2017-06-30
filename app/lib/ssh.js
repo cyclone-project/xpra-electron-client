@@ -14,7 +14,7 @@ function* createConnection(config) {
     let URL = "";
     let actualState = STATE.HANDSHAKE;
 
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve, rejectOuter) => {
 
         let ssh = new SSH2Client();
         let sshPromise = new Promise((resolve, reject) => {
@@ -26,6 +26,7 @@ function* createConnection(config) {
                     resolve(ssh);
                 })
                 .on('keyboard-interactive', authenticate)
+                .on('error', (error) => reject(error))
                 .connect({
                     host: config.host,
                     port: 22,
@@ -57,21 +58,23 @@ function* createConnection(config) {
                         console.log('Client :: ERROR');
                         ssh.removeListener('keyboard-interactive', authenticate);
                         ssh.end();
-                        reject();
+                        rejectOuter();
                         finish(['ERROR']);
                     }
                     break;
 
                 // URL already opened and now we might be allowed access
                 case STATE.URL_FETCHED:
-                    // TODO If wrong user
+                    console.log('User not allowed to login');
+                    rejectOuter(new Error(`User not allowed to login as ${config.username}`));
+                    finish(['ERROR']);
                     break;
 
                 // We shouldn't be here
                 default:
                     ssh.removeListener('keyboard-interactive', authenticate);
                     console.log(prompts);
-                    reject();
+                    rejectOuter();
                     finish(['ERROR']);
 
             }
@@ -119,12 +122,12 @@ function forwardConnection(ssh, config) {
 
 }
 
-function * createTunnel (ssh, config) {
+function * createTunnel(ssh, config) {
 
     //yield forwardConnection(ssh, config);
 
-    return new Promise( (resolve, reject) => {
-        const server = net.createServer( co.wrap(function * (connection) {
+    return new Promise((resolve, reject) => {
+        const server = net.createServer(co.wrap(function *(connection) {
             const stream = yield forwardConnection(ssh, config);
             connection.pipe(stream).pipe(connection);
             //console.log('tunnel pipeline created.');

@@ -66,11 +66,11 @@ app.on('ready', () => {
 
         const contextMenu = Menu.buildFromTemplate(
             [{
-                 label: 'Close',
+                label: 'Close',
                 click (){
-                     app.quit()
+                    app.quit()
                 }
-                }]);
+            }]);
         tray.setContextMenu(contextMenu);
     }
 
@@ -78,7 +78,7 @@ app.on('ready', () => {
 
 // Detect if the app is already running and do not start it again,
 // just recreate the login window in the existing instance
- let iShouldQuit = app.makeSingleInstance(() => {
+let iShouldQuit = app.makeSingleInstance(() => {
     if (loginWindow == null) {
         createLoginWindow();
     }
@@ -87,7 +87,10 @@ app.on('ready', () => {
     }
 });
 
-if (iShouldQuit) {app.quit();return;}
+if (iShouldQuit) {
+    app.quit();
+    return;
+}
 
 // Quit when all windows are closed.
 app.on('window-all-closed', function () {
@@ -105,7 +108,7 @@ app.on('activate', function () {
 
 ipcMain.on('successful-login', function (event, arg) {
 
-    co(function *(){
+    co(function *() {
 
         createLoadingWindow();
 
@@ -128,13 +131,30 @@ ipcMain.on('successful-login', function (event, arg) {
         let tunnel = arg.selectedForm == 'sshTunnel';
 
 
-        let ssh = yield Client.createConnection(config);
+        let ssh
+        try {
+            ssh = yield Client.createConnection(config);
+        }
+        catch (error) {
+            console.log(error);
+            return;
+        }
+
         loadingWindow.close();
         let authenticateWindow = new BrowserWindow();
         authenticateWindow.loadURL(ssh.url);
 
         // Wait for the login to be successful
-        client = yield ssh.sshPromise;
+        let client;
+        try {
+            client = yield ssh.sshPromise;
+        }
+        catch (error) {
+            console.log(error);
+            return;
+        }
+
+        client.on('error', handleSSHError);
         authenticateWindow.close();
 
         createLoadingWindow();
@@ -153,12 +173,11 @@ ipcMain.on('successful-login', function (event, arg) {
                 closable: false
             });
             loadingWindow.close();
+            xpraWindow.on('did-fail-load', handleHTTPError);
             xpraWindow.loadURL(`http://localhost:${config.localPort}`);
-            //yield sleep(2000);
-            //xpraWindow.loadURL(`http://localhost:${config.localPort}/index.html?server=localhost&port=${config.remotePort}&encoding=&keyboard_layout=us&submit=true`);
             //xpraWindow.webContents.openDevTools();
         }
-        loginWindow.setPosition(0,0, true);
+        loginWindow.setPosition(0, 0, true);
         loginWindow.send('connection-started');
         loginWindow.show();
     })
@@ -168,7 +187,7 @@ ipcMain.on('successful-login', function (event, arg) {
 
 ipcMain.on('disconnect', () => {
 
-    co(function *(){
+    co(function *() {
 
         try {
             // Close window
@@ -197,5 +216,10 @@ ipcMain.on('disconnect', () => {
     })
 });
 
-// In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and require them here.
+function handleHTTPError(event, errorCode, errorDescription, validateURL, isMainFrame) {
+    console.log(errorCode);
+}
+
+function handleSSHError(Error) {
+    console.log(Error);
+}
